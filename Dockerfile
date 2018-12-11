@@ -1,7 +1,16 @@
-FROM mikeifomin/midas_coins_base
+FROM mikeifomin/midas_wallet_base:v1-zeromq-dev
 
-COPY ./midasd /usr/local/bin/coind
-COPY ./midas-cli /usr/local/bin/coin-cli
+WORKDIR /usr/local/bin
 
+COPY ./midasd .
+COPY ./midas-cli .
+
+RUN chmod +x ./* && \
+    ln midasd walletd && \
+    ln midas-cli wallet-cli
+
+VOLUME ["/root/.midas"]
 EXPOSE 44433
+
+RUN walletd --help || exit $(($? == 127))
 
